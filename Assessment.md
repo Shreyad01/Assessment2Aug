@@ -61,6 +61,7 @@ Dockerfiles, and Kubernetes manifests.
  <br>
 
  ![alt text](images/image.png)
+ 
  +  Implement a strategy for merging changes from development to testing and
 production.
 
@@ -108,9 +109,10 @@ processing).
    + for this first we initialize the Node.js application by using command :
 
     `npm init -y`
-    <br>
+    
+  <br>
 
-     ![alt text](images/image-13.png)
+  ![alt text](images/image-13.png)
 
    + Now we will install PostgresSql client for Node.js by using command :
 
@@ -161,7 +163,28 @@ processing).
 
    ![alt text](images/image-15.png)
 
-2. Run the container 
+
++ Push the Docker image to Docker Hub 
+
+ login dockerhub `docker login -u shreyad01`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 2. Run the container 
 
  1. Run the **frontend** container in **development** using command :
  ` sudo docker run --name frontend-container --network fullstack-network -d -p 8082:80 frontend `
@@ -228,9 +251,10 @@ processing).
 
 #### Task 3: Kubernetes Deployment
 
-1. Create Kubernetes manifests for deploying each microservice.
-+ Define Pods, Services, Deployments, and ReplicaSets.
-+ Use ConfigMaps and Secrets for configuration management.
++  Write a Kubernetes  frontend – deployment and backend - deployment
+
+   <br>
+   
 
 2. Deploy the microservices to a Kubernetes cluster.
 
