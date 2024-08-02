@@ -137,7 +137,7 @@ processing).
 
 + Built Docker images in a container registry
 
- 1. build the image of **front-end** in development branch using command 
+ 1. build the image of **front-end** in **development branch** using command 
    `sudo docker build -t frontend . `
 
    <br>
@@ -145,7 +145,7 @@ processing).
    ![alt text](images/image-3.png)
 
 
-  2. Build the **database** in development branch using command :
+  2. Build the **database** in **development branch** using command :
 
   ` sudo docker build -t my-postgres-db .`
 
@@ -153,7 +153,7 @@ processing).
 
    ![alt text](images/image-9.png)
   
-  3. Build the **backend** in development branch using command :
+  3. Build the **backend** in **development branch** using command :
 
   ` sudo docker build -t backend .` 
 
@@ -163,19 +163,36 @@ processing).
 
 2. Run the container 
 
- 1. Run the **frontend** container using command :
+ 1. Run the **frontend** container in **development** using command :
  ` sudo docker run --name frontend-container --network fullstack-network -d -p 8082:80 frontend `
  <br>
 
  ![alt text](images/image-4.png)
 
+  2. Run the **frontend** container in **production** branch using command :
+
+   ` sudo docker run --name frontend-production-container --network fullstack-network -d -p 8083:80 frontend`
+
+  <br>
+
+  ![alt text](images/image-17.png)
+
+  3. Run the **frontend** container in **testing** branch using command :
+
+   ` sudo docker run --name frontend-testing-container --network fullstack-network -d -p 8084:80 frontend`
+
+   <br>
+
+   ![alt text](images/image-19.png)
+
  2. run the **postgreSQL** database container using command :
 
- ` sudo docker run --name postgress-container --network fullstack-network -v pgdata:/var/lib/postgresql/data -d my-postgres-db`
+ `sudo docker run --name postgress-container --network fullstack-network -v pgdata:/var/lib/postgresql/data -d my-postgres-db`
+
 
  <br>
 
-  ![alt text](images/image-10.png)
+![alt text](images/image-10.png)
 
  3. Run the **backend** container using command :
 
@@ -185,12 +202,23 @@ processing).
 
  ![alt text](images/image-16.png)
 
-3. on browser run  command `localhost:8082 ` to see output .
+3. on browser run  command `localhost:8082 ` to see output  of **development** branch.
 
  <br>
 
  ![alt text](images/image-5.png)
 
+ 4. on browser run  command `localhost:8083 ` to see output  of **production** branch.
+
+ <br>
+
+ ![alt text](images/image-18.png)
+
+ 5. on browser run  command `localhost:8084 ` to see output  of **testing** branch.
+ 
+  <br>
+
+  
 
 #### do same above process for testing and production branch
 
