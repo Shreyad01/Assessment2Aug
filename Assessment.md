@@ -127,70 +127,44 @@ processing).
 
   ![alt text](images/image-2.png)
 
-4. Build Docker images for each microservice and push them to a container registry
-(e.g., Docker Hub).
-
-5. Deliverables:
-
-+ Dockerfiles for each microservice
-
- 
-
- 
-
- 
-
- 2. in backend folder create **index.js** and **docekrfile** on development branch.
-   + for this first we initialize the Node.js application by using command :
-
-    `npm init -y`
-    
-  <br>
-
-  ![alt text](images/image-13.png)
-
-   + Now we will install PostgresSql client for Node.js by using command :
-
-   ` npm install express pg`
-
-   <br>
-
-   ![alt text](images/image-14.png)
-
-  <br>
-
-   ![alt text](images/image-6.png)
-
-   <br>
-
- ![alt text](images/image-7.png)
-  
-  3. in database create **dockerfile** on development branch
++ in database create **dockerfile** on development branch for **product catlog**
 
   <br>
 
  ![alt text](images/image-8.png)
 
++ in backend folder create **index.js** and **dockerfile** on development branch for **order processing** 
 
-+ Built Docker images in a container registry
+ <br>
 
- 1. build the image of **front-end** in **development branch** using command 
-   `sudo docker build -t frontend . `
+ ![alt text](images/image-7.png)
 
-   <br>
+<br>
+
+   ![alt text](images/image-6.png)
+
+
+4. Build Docker images for each microservice and push them to a container registry
+(e.g., Docker Hub).
+
++ build the image of **front-end** in **development branch** using command : 
+  
+  `sudo docker build -t frontend . `
+
+  <br>
 
    ![alt text](images/image-3.png)
 
 
-  2. Build the **database** in **development branch** using command :
++ Build the **database** in **development branch** using command :
 
   ` sudo docker build -t my-postgres-db .`
 
-  <br>
+ <br>
 
    ![alt text](images/image-9.png)
-  
-  3. Build the **backend** in **development branch** using command :
+
++ Build the **backend** in **development branch** using command :
 
   ` sudo docker build -t backend .` 
 
@@ -199,43 +173,266 @@ processing).
    ![alt text](images/image-15.png)
 
 
-+ Push the Docker image to Docker Hub 
+5. Deliverables:
 
- login dockerhub `docker login -u dockerHUb_username`
++ Dockerfiles for each microservice
 
++ Built Docker images in a container registry
+
+  
+
+
++ TO push the Docker image to Docker Hub 
+
+ login dockerhub  :
+
+`docker login -u dockerHub_username`
  
   <br>
 
   ![alt text](images/image-19.png)
 
-  + Create image tag for frontend and backend image 
++ Create image tag for frontend , backend  and database image 
 
    + for frontend :
-     `docker tag frontend:latest your-dockerhub-username/assesment:frontend`
+     
+  `docker tag frontend:latest shreyad01/assesment:frontend`
+   
+   +  for backend :
+
+  `docker tag backend:latest shreyad01/assesment:backend`
+
+   +  for database :
+
+  `docker tag my-postgres-db:latest shreyad01/assesment:my-postgres-db` 
 
   + now push the image on dockerhub using command :
 
   + for frontend:
 
-   ` sudo docker push dockerHUb_username/dockerhub_reponame:image_tag`
+   ` sudo docker push shreyad01/assesment:frontend`
    <br>
 
    ![alt text](images/image-20.png)
 
    + for backend :
 
-   `sudo docker push dockerhub_username/dockerhub_reponame:image_tag`
+   `sudo docker push shreyad01/assesment:backend`
+
+   + for database : 
+
+   `sudo docker push shreyad01/assesment:my-postgres-db`
+
+   <br>
+
+   ![alt text](images/image-29.png)
 
 
 #### Task 3: Kubernetes Deployment
 
 + First start `minikube`
 
-+  Write a Kubernetes  frontend-deployment and backend - deployment
+1. Create **Kubernetes manifests for deploying each microservice**.
+   + Define Pods, Services, Deployments, and ReplicaSets.
+   + Use ConfigMaps and Secrets for configuration management.
 
-   <br>
-  
-+ Apply kubectl
+ **frontend-deployment.yaml**
+
+  ```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: chirag1212/full-stack-app:frontend_v3
+        ports:
+        - containerPort: 80
+
+  ```
+
+  **frontend-service.yaml**
+
+  ```
+  apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30006
+  type: NodePort
+
+  ```
+
+**backend-deployment.yaml**
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: chirag1212/full-stack-app:backend
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DATABASE_HOST
+        - name: DATABASE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DATABASE_PORT
+        - name: DATABASE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DATABASE_USER
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DATABASE_PASSWORD
+        - name: DATABASE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: backend-config
+              key: DATABASE_NAME
+```
+
+**backend-service.yaml**
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+```
+
+**backend-config.yaml**
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  DATABASE_HOST: postgresql-service
+  DATABASE_PORT: "5432"
+  DATABASE_USER: appUser
+  DATABASE_PASSWORD: user@123
+  DATABASE_NAME: mydatabase
+```
+
+**database-deployment.yaml**
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+      - name: postgresql
+        image: chirag1212/full-stack-app:database
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "appUser"
+        - name: POSTGRES_PASSWORD
+          value: "user@123"
+        - name: POSTGRES_DB
+          value: "mydatabase"
+        volumeMounts:
+        - name: postgredb-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgredb-storage
+        persistentVolumeClaim:
+          claimName: postgresql-pvc
+```
+
+**database-service.yaml**
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-service
+spec:
+  selector:
+    app: postgresql
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
+```
+
+**database-pvc.yaml**
+
+```
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+2. **Deploy the microservices to a Kubernetes cluster.**
 
  `kubectl apply -f frontend-deployment.yaml`
    
@@ -277,39 +474,83 @@ processing).
 
    <br>
 
-   ![alt text](image.png)
+   ![alt text](images/image-27.png)
 
    `kubectl apply -f frontend-service.yaml`
 
    <br>
 
-   ![alt text](image-1.png)
+  ![alt text](images/image-28.png)
 
-2. Deploy the microservices to a Kubernetes cluster.
 
 3. Deliverables:
 + Kubernetes manifests (YAML files)
 + Successful deployment of microservices in the Kubernetes cluster
 
-### 3. on browser run  command `localhost:8082 ` to see output  of **development** branch.
 
- <br>
 
- ![alt text](images/image-5.png)
 
- 4. on browser run  command `localhost:8083 ` to see output  of **production** branch.
+#### Task 4: Ansible Configuration Management
 
- <br>
+1. Create Ansible playbooks to manage the deployment and configuration of the
+microservices.
+  + Use variables to handle environment-specific configurations.
+  + Utilize Jinja2 templates to dynamically generate configuration files.
 
- ![alt text](images/image-18.png)
+2. Set up Ansible inventories to manage different environments (development,
+testing, production).
 
- 5. on browser run  command `localhost:8084 ` to see output  of **testing** branch.
- 
-  <br>
+3. Deliverables:
+ + Ansible playbooks
+ + Ansible inventory files
+ + Jinja2 templates for configuration files
 
-  
 
-#### do same above process for testing and production branch
+#### Task 5: Jenkins CI/CD Pipeline
+1. Set up a Jenkins pipeline using a Jenkinsfile.
+ + Integrate with Git to trigger the pipeline on code changes.
+ + Define stages for building Docker images, pushing them to the registry,
+deploying to Kubernetes, and running tests.
+
+2. Implement error handling and notifications to alert the team on failures.
+
+3. Deliverables:
+ + Jenkinsfile defining the CI/CD pipeline
++ Screenshots or logs demonstrating successful pipeline execution
+
+
+### Evaluation Criteria
+Participants will be evaluated based on the following:
+1. Git:
+ + Proper repository setup with clear structure and documentation
+ + Effective branching strategy and merge practices
+
+2. Docker:
+ + Correct and efficient Dockerfile creation
+ + Successful building and pushing of Docker images
+
+3. Kubernetes:
+ + Accurate and functional Kubernetes manifests
+ + Successful deployment and management of microservices in the cluster
+
+4. Ansible:
+ + Well-structured playbooks with proper use of variables and templates
+ + Effective inventory management for different environments
+
+5. Jenkins:
+ + Comprehensive and functional Jenkins pipeline
+ + Proper integration with Git and handling of build, test, and deployment stages
+ + Effective error handling and notifications
+
+
+### Submission
+Participants should submit the following:
+
++ Git repository URL with all project files
++ Docker Hub repository links to the built images
++ Screenshots or logs of the Kubernetes deployment
++ Jenkins pipeline execution logs or screenshots
++ Detailed documentation explaining the setup and configurations
 
 
 
