@@ -45,10 +45,39 @@ Jenkins.
 ### Tasks and Deliverables
 
 #### Task 1: Git Repository Setup
-1. Create a Git repository to store all project files, including Ansible playbooks,
+1. **Create a Git repository** to store all project files, including Ansible playbooks,
 Dockerfiles, and Kubernetes manifests.
 
-2. Branching Strategy:
++ initialize git repo using command : 
+```
+git init
+```
+
++ check status using command :
+```
+git status
+```
+
++ add and commit changes:
+```
+git add .
+git commit -m "initial changes done"
+```
+
++ add remote repo using command :
+```
+git remote add origin https://github.com/Shreyad01/Assessment2Aug.git
+```
+
++ again check status
+```
+git status
+```
++ push the changes on github 
+```
+git push -u origin master
+```
+2. **Branching Strategy:**
  + Create branches for development, testing, and production. using following command
 
  ```
@@ -88,6 +117,16 @@ mkdir frontend backend databse
 3. Create Dockerfiles for each microservice (front-end, product catalog, order
 processing).
 
+ +  in frontend folder create **index.html** and **dockerfile** for front-end on development branch
+    
+     <br>
+
+  ![alt text](images/image-1.png)
+  
+  <br>
+
+  ![alt text](images/image-2.png)
+
 4. Build Docker images for each microservice and push them to a container registry
 (e.g., Docker Hub).
 
@@ -95,15 +134,11 @@ processing).
 
 + Dockerfiles for each microservice
 
- 1. in frontend folder create **index.html** and **dockerfile** for front-end on development branch
+ 
 
-  <br>
+ 
 
-  ![alt text](images/image-1.png)
-
-  <br>
-
-  ![alt text](images/image-2.png)
+ 
 
  2. in backend folder create **index.js** and **docekrfile** on development branch.
    + for this first we initialize the Node.js application by using command :
@@ -166,66 +201,97 @@ processing).
 
 + Push the Docker image to Docker Hub 
 
- login dockerhub `docker login -u shreyad01`
+ login dockerhub `docker login -u dockerHUb_username`
+
+ 
+  <br>
+
+  ![alt text](images/image-19.png)
+
+  + Create image tag for frontend and backend image 
+
+   + for frontend :
+     `docker tag frontend:latest your-dockerhub-username/assesment:frontend`
+
+  + now push the image on dockerhub using command :
+
+  + for frontend:
+
+   ` sudo docker push dockerHUb_username/dockerhub_reponame:image_tag`
+   <br>
+
+   ![alt text](images/image-20.png)
+
+   + for backend :
+
+   `sudo docker push dockerhub_username/dockerhub_reponame:image_tag`
 
 
+#### Task 3: Kubernetes Deployment
 
++ First start `minikube`
 
++  Write a Kubernetes  frontend-deployment and backend - deployment
 
+   <br>
+  
++ Apply kubectl
 
+ `kubectl apply -f frontend-deployment.yaml`
+   
+   <br>
 
+  ![alt text](images/image-21.png)
 
-
-
-
-
-
-
-
-
-
-# 2. Run the container 
-
- 1. Run the **frontend** container in **development** using command :
- ` sudo docker run --name frontend-container --network fullstack-network -d -p 8082:80 frontend `
- <br>
-
- ![alt text](images/image-4.png)
-
-  2. Run the **frontend** container in **production** branch using command :
-
-   ` sudo docker run --name frontend-production-container --network fullstack-network -d -p 8083:80 frontend`
+  `kubectl apply -f backend-deployment.yaml`
 
   <br>
 
-  ![alt text](images/image-17.png)
+  ![alt text](images/image-22.png)
 
-  3. Run the **frontend** container in **testing** branch using command :
-
-   ` sudo docker run --name frontend-testing-container --network fullstack-network -d -p 8084:80 frontend`
+   `kubectl apply -f backend-config.yaml`
 
    <br>
 
-   ![alt text](images/image-19.png)
+   ![alt text](images/image-23.png)
 
- 2. run the **postgreSQL** database container using command :
+   `kubectl apply -f backend-service.yaml`
 
- `sudo docker run --name postgress-container --network fullstack-network -v pgdata:/var/lib/postgresql/data -d my-postgres-db`
+   <br>
 
+   ![alt text](images/image-24.png)
 
- <br>
+   `kubectl apply -f database-deployment.yaml`
 
-![alt text](images/image-10.png)
+   <br>
 
- 3. Run the **backend** container using command :
+   ![alt text](images/image-25.png)
 
- `docker run --name backend-container --network fullstack-network -d backend `
+   `kubectl apply -f database-pvc.yaml`
 
- <br>
+   <br>
 
- ![alt text](images/image-16.png)
+   ![alt text](images/image-26.png)
 
-3. on browser run  command `localhost:8082 ` to see output  of **development** branch.
+   `kubectl apply -f database-service.yaml`
+
+   <br>
+
+   ![alt text](image.png)
+
+   `kubectl apply -f frontend-service.yaml`
+
+   <br>
+
+   ![alt text](image-1.png)
+
+2. Deploy the microservices to a Kubernetes cluster.
+
+3. Deliverables:
++ Kubernetes manifests (YAML files)
++ Successful deployment of microservices in the Kubernetes cluster
+
+### 3. on browser run  command `localhost:8082 ` to see output  of **development** branch.
 
  <br>
 
@@ -249,15 +315,3 @@ processing).
 
 
 
-#### Task 3: Kubernetes Deployment
-
-+  Write a Kubernetes  frontend – deployment and backend - deployment
-
-   <br>
-   
-
-2. Deploy the microservices to a Kubernetes cluster.
-
-3. Deliverables:
-+ Kubernetes manifests (YAML files)
-+ Successful deployment of microservices in the Kubernetes cluster
